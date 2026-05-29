@@ -1,11 +1,12 @@
 import { useState, ChangeEvent, SubmitEvent } from "react";
 import { BACKEND_URL } from "../App";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function FileUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [curentFieldType, setCurentFieldType] = useState<string>("password");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // 1. Handle file selection
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -28,6 +29,8 @@ export default function FileUpload() {
     if (!file) return alert("Please select a file first!");
     if (!password) return alert("Please enter the password!");
 
+    setIsLoading(true);
+
     const formData = new FormData();
     formData.append("db-file", file);
     formData.append("db-password", password);
@@ -38,14 +41,17 @@ export default function FileUpload() {
         body: formData,
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        alert("Error uploading the file.");
+        alert(`Error: ${data.error}`);
       }
 
-      const data = await response.json();
       console.log(data);
     } catch (error) {
-      console.error("Upload failed:", error);
+      alert(`Upload Failed: ${error}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,19 +62,12 @@ export default function FileUpload() {
         className="space-y-6 flex flex-col items-center"
       >
         {/* 1. Only the File Input has the dashed border wrapper */}
-        <div className="w-11/12 max-w-md p-4 border-2 border-dashed border-gray-300 rounded-xl mt-10">
+        <div className="w-11/12 max-w-md p-4 border-2 border-dashed border-grn3 rounded-xl mt-14">
           <input
             type="file"
             onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-grn1 file:text-grn4 hover:file:opacity-90 cursor-pointer"
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-white file:text-grn4 hover:file:opacity-90 cursor-pointer"
           />
-
-          {file && (
-            <p className="text-sm text-gray-600 mt-2 text-center">
-              Selected:{" "}
-              <span className="font-medium text-black">{file.name}</span>
-            </p>
-          )}
         </div>
 
         {/* 2. Password Input (clean, no dashed borders) */}
@@ -77,11 +76,15 @@ export default function FileUpload() {
             type={curentFieldType}
             required
             onChange={handlePasswordChange}
-            className="block w-11/12 max-w-md text-xl text-grn4 outline-none border-b-2 border-gray-300 pb-2 focus:border-grn4 transition-colors"
+            className="block w-11/12 max-w-md text-xl text-grn4 outline-none border-b-2 border-grn2 pb-2 focus:border-grn4 transition-colors"
             placeholder="Password"
           />
 
-          <button type="button" onClick={toggleCurrentFieldType}>
+          <button
+            type="button"
+            onClick={toggleCurrentFieldType}
+            className="cursor-pointer outline-none"
+          >
             {curentFieldType === "text" ? (
               <EyeOff size={20} className="text-grn4" />
             ) : (
@@ -93,9 +96,14 @@ export default function FileUpload() {
         {/* 3. Submit Button (Now successfully inside the form) */}
         <button
           type="submit"
-          className="w-11/12 max-w-md bg-grn4 text-white py-2 px-4 rounded-md font-medium cursor-pointer outline-none hover:bg-grn4hvr transition"
+          disabled={isLoading}
+          className="flex justify-center w-11/12 max-w-md bg-grn4 text-center text-white py-2 px-4 rounded-md font-medium cursor-pointer outline-none hover:bg-grn4hvr transition"
         >
-          Upload File
+          {isLoading ? (
+            <Loader2 className="animate-spin size-5" />
+          ) : (
+            <span>Unlock</span>
+          )}
         </button>
       </form>
     </>
