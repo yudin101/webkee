@@ -75,6 +75,8 @@ export default function EntriesLayout() {
                       title={entry.title}
                       username={entry.username}
                       password={entry.password}
+                      url={entry.url}
+                      otp={entry.otp}
                     />
                   ))
                 ) : (

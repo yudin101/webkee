@@ -4,7 +4,9 @@ import { Copy, Check } from "lucide-react";
 export default function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState<boolean>(false);
 
-  const handleCopy = async () => {
+  const handleCopy = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
     try {
       await navigator.clipboard.writeText(content);
 
@@ -17,7 +19,11 @@ export default function CopyButton({ content }: { content: string }) {
   };
 
   return (
-    <button type="button" onClick={handleCopy} className="cursor-pointer focus:outline-none">
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="cursor-pointer focus:outline-none"
+    >
       {copied ? (
         <Check size={20} className="text-grn4 animate-scaleIn" />
       ) : (
