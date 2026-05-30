@@ -9,7 +9,7 @@ export default function Entry({ title, username, password }: IEntry) {
   const toggleIsHidden = () => setIsHidden(!isHidden);
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors">
+    <tr className="hover:bg-grn1hvr transition-colors">
       <td className="px-6 py-4 font-medium text-gray-900">{title}</td>
       <td className="px-6 py-4 flex justify-between">
         <span className="truncate block max-w-[12rem]">{username}</span>

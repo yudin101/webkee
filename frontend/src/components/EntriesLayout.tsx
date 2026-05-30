@@ -1,5 +1,8 @@
 import { FaSearch } from "react-icons/fa";
 import Entry from "./Entry";
+import { useContext, useState } from "react";
+import { EntriesContext } from "../App";
+import { useNavigate } from "react-router-dom";
 
 export interface IEntry {
   id?: string;
@@ -11,53 +14,29 @@ export interface IEntry {
   url?: string;
 }
 
-// Mock Data
-const entries: IEntry[] = [
-  {
-    id: "1",
-    title: "Mail",
-    username: "yyudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101yudin101udin101",
-    password: "rrandomrandomrandomrandomrandomrandomrandomrandomrandomrandomandom",
-    group: "something",
-  },
-  {
-    id: "2",
-    title: "Google",
-    username: "contact@yudin101.com.np",
-    password: "random",
-    group: "something",
-  },
-  {
-    id: "3",
-    title: "Proton",
-    username: "proton-yudin101",
-    password: "random",
-    group: "something",
-    url: "https://mail.proton.me",
-  },
-  {
-    id: "4",
-    title: "Mail",
-    username: "new-yudin101",
-    password: "random",
-    group: "something",
-  },
-  {
-    id: "5",
-    title: "YouTube",
-    username: "yudin101",
-    password: "random",
-    group: "something",
-  },
-];
-
 export default function EntriesLayout() {
+  const navigate = useNavigate();
+
+  const { entries } = useContext(EntriesContext);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const filteredEntries = entries
+    ? entries.filter((entry: IEntry) =>
+        entry.title!.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : [];
+
   return (
     <div className="min-h-screen max-h-full w-full bg-grn2 flex flex-col items-center overflow-hidden">
       <div className="w-11/15">
         <div className="flex justify-between items-center bg-grn1 px-10 py-5 rounded-xl mt-7">
-          <h1 className="font-extrabold text-grn4 text-2xl">WebKee</h1>
-          <button className="bg-grn4 text-white py-2 px-7 rounded-md font-medium cursor-pointer outline-none hover:bg-grn4hvr transition">
+          <h1
+            className="font-extrabold text-grn4 text-2xl cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            WebKee
+          </h1>
+          <button className="bg-grn3 text-white py-2 px-7 rounded-md font-medium cursor-pointer outline-none hover:bg-grn4hvr transition">
             Save
           </button>
         </div>
@@ -68,13 +47,14 @@ export default function EntriesLayout() {
             <input
               type="text"
               placeholder="Search entries..."
+              value={searchQuery}
               className="w-screen text-grn4 outline-none"
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
           <hr className="mt-3 mb-3 border-1 border-grn2" />
 
-          {/* TODO: Populate entries with <Entry /> */}
           <div className="w-full">
             <table className="w-full text-left border-collapse text-sm text-gray-600">
               {/* Table Header Group */}
@@ -88,14 +68,25 @@ export default function EntriesLayout() {
 
               {/* Table Body Group */}
               <tbody className="divide-y divide-gray-200">
-                {entries.map((entry: IEntry) => (
-                  <Entry
-                    key={entry.id} 
-                    title={entry.title}
-                    username={entry.username}
-                    password={entry.password}
-                  />
-                ))}
+                {filteredEntries.length > 0 ? (
+                  filteredEntries.map((entry: IEntry) => (
+                    <Entry
+                      key={entry.id}
+                      title={entry.title}
+                      username={entry.username}
+                      password={entry.password}
+                    />
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="px-6 py-8 text-center text-gray-400"
+                    >
+                      {entries ? "No matching entries found." : "Loading..."}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

@@ -1,12 +1,17 @@
-import { useState, ChangeEvent, SubmitEvent } from "react";
-import { BACKEND_URL } from "../App";
+import { useState, ChangeEvent, SubmitEvent, useContext } from "react";
+import { BACKEND_URL, EntriesContext } from "../App";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function FileUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [curentFieldType, setCurentFieldType] = useState<string>("password");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+  
+  const { setEntries } = useContext(EntriesContext);
 
   // 1. Handle file selection
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,9 +50,11 @@ export default function FileUpload() {
 
       if (!response.ok) {
         alert(`Error: ${data.error}`);
+        return;
       }
 
-      console.log(data);
+      setEntries(data.entries);
+      navigate("/entries");
     } catch (error) {
       alert(`Upload Failed: ${error}`);
     } finally {
