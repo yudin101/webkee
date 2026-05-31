@@ -1,13 +1,15 @@
-import { useState } from "react";
-import { IEntry } from "./EntriesLayout.tsx";
+import { useContext, useState } from "react";
+import { IEntry, PropsContext } from "./EntriesList.tsx";
 import CopyButton from "./CopyButton.tsx";
-import { Eye, EyeOff, RefreshCw } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, Pencil } from "lucide-react";
 import { BACKEND_URL } from "../App.tsx";
 
 export default function Entry({ title, username, password, url, otp }: IEntry) {
   const [isHidden, setIsHidden] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [updatedOtp, setUpdatedOtp] = useState<string | null>(otp || null);
+
+  const { setActiveEntry, setIsEditOpen } = useContext(PropsContext);
 
   const toggleIsHidden = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -36,6 +38,11 @@ export default function Entry({ title, username, password, url, otp }: IEntry) {
     }
 
     setUpdatedOtp(data.otp);
+  };
+
+  const handleEdit = () => {
+    setActiveEntry({ title, username, password, url });
+    setIsEditOpen(true);
   };
 
   return (
@@ -89,7 +96,7 @@ export default function Entry({ title, username, password, url, otp }: IEntry) {
       </tr>
 
       {isOpen && (
-        <tr className="">
+        <tr>
           <td colSpan={3} className="px-12 py-4 border-b border-gray-200">
             <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 animate-fadeIn">
               <div>
@@ -131,6 +138,19 @@ export default function Entry({ title, username, password, url, otp }: IEntry) {
                   )}
                 </div>
               </div>
+            </div>
+            <div className="flex justify-end mt-2 font-bold">
+              <button
+                type="button"
+                className="flex items-center bg-grn3 p-2 rounded-md hover:bg-grn4hvr cursor-pointer"
+                onClick={handleEdit}
+              >
+                <Pencil
+                  size={15}
+                  className="text-white mr-2 hover:opacity-80 transition-opacity"
+                />
+                <span className="text-white">Edit</span>
+              </button>
             </div>
           </td>
         </tr>
