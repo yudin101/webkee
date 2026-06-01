@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, SubmitEvent, useContext } from "react";
-import { BACKEND_URL, EntriesContext } from "../App";
+import { BACKEND_URL, EntriesContext, FileContext } from "../App";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -8,15 +8,17 @@ export default function FileUpload() {
   const [password, setPassword] = useState<string | null>(null);
   const [curentFieldType, setCurentFieldType] = useState<string>("password");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { setFileName } = useContext(FileContext);
 
   const navigate = useNavigate();
-  
+
   const { setEntries } = useContext(EntriesContext);
 
   // 1. Handle file selection
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]); // Get the first selected file
+      setFileName(e.target.files[0].name);
     }
   };
 

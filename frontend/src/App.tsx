@@ -21,13 +21,17 @@ const router = createBrowserRouter([
 ]);
 
 export const EntriesContext = createContext<any>(null);
+export const FileContext = createContext<any>(null);
 
 function App() {
   const [entries, setEntries] = useState<IEntry[] | null>(null);
+  const [fileName, setFileName] = useState<string>("");
 
   return (
     <EntriesContext.Provider value={{ entries, setEntries }}>
-      <RouterProvider router={router} />
+      <FileContext.Provider value={{ fileName, setFileName }}>
+        <RouterProvider router={router} />
+      </FileContext.Provider>
     </EntriesContext.Provider>
   );
 }
