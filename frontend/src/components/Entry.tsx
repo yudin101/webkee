@@ -4,7 +4,15 @@ import CopyButton from "./CopyButton.tsx";
 import { Eye, EyeOff, RefreshCw, Pencil } from "lucide-react";
 import { BACKEND_URL } from "../App.tsx";
 
-export default function Entry({ title, username, password, url, otp }: IEntry) {
+export default function Entry({
+  id,
+  title,
+  username,
+  password,
+  group,
+  url,
+  otp,
+}: IEntry) {
   const [isHidden, setIsHidden] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [updatedOtp, setUpdatedOtp] = useState<string | null>(otp || null);
@@ -41,7 +49,7 @@ export default function Entry({ title, username, password, url, otp }: IEntry) {
   };
 
   const handleEdit = () => {
-    setActiveEntry({ title, username, password, url });
+    setActiveEntry({ id, title, username, password, group, url, otp });
     setIsEditOpen(true);
   };
 
@@ -113,6 +121,16 @@ export default function Entry({ title, username, password, url, otp }: IEntry) {
                   {url || "None provided"}
                 </a>
               </div>
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  Group
+                </p>
+                <p className="flex items-center font-mono text-gray-900 mt-1">
+                  {group}
+                </p>
+              </div>
+
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                   One-Time Password (OTP)

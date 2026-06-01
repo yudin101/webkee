@@ -71,9 +71,11 @@ export default function EntriesList() {
                 filteredEntries.map((entry: IEntry) => (
                   <Entry
                     key={entry.id}
+                    id={entry.id}
                     title={entry.title}
                     username={entry.username}
                     password={entry.password}
+                    group={entry.group}
                     url={entry.url}
                     otp={entry.otp}
                   />

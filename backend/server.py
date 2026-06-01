@@ -3,6 +3,7 @@ from pykeepass import PyKeePass, exceptions
 import pyotp
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
+from uuid import UUID
 
 app = Flask(__name__)
 CORS(app)
@@ -52,6 +53,7 @@ def upload():
                 "title": entry.title,
                 "username": entry.username,
                 "password": entry.password,
+                "group": entry.group.name,
                 "url": entry.url,
                 "otp": get_otp(entry.otp),
             }
@@ -82,35 +84,6 @@ def updateOtp():
         return jsonify({"error": "Method Not Allowed!"}), 405
 
 
-@app.route("/edit", methods=["POST"])
-def edit():
-    if request.method == "POST":
-        global kp
-        global entry
-        global old_entry_details
-
-        title = request.form.get("title")
-
-        try:
-            entry = kp.find_entries(title=title, first=True)
-
-            old_entry_details = {
-                "title": entry.title,
-                "group": entry.group.name,
-                "username": entry.username,
-                "password": entry.password,
-                "url": entry.url,
-                "otp": entry.otp,
-            }
-
-        except AttributeError:
-            return jsonify({"error": "Submit the database again!"}), 410
-
-        return jsonify(old_entry_details), 200
-    else:
-        return jsonify({"error": "Method Not Allowed!"}), 405
-
-
 @app.route("/updateEntry", methods=["POST"])
 def updateEntry():
     if request.method == "POST":
@@ -118,6 +91,7 @@ def updateEntry():
         global entry
         global old_entry_details
 
+        received_uuid = UUID(request.form.get("id"))
         received_title = request.form.get("title")
         received_group = request.form.get("group")
         received_username = request.form.get("username")
@@ -125,7 +99,20 @@ def updateEntry():
         received_url = request.form.get("url")
         received_otp = request.form.get("otp")
 
+        entry = kp.find_entries(uuid=received_uuid, first=True)
+
+        old_entry_details = {
+            "uuid": entry.uuid,
+            "title": entry.title,
+            "group": entry.group.name,
+            "username": entry.username,
+            "password": entry.password,
+            "url": entry.url,
+            "otp": entry.otp,
+        }
+
         new_entry = {
+            "uuid": received_uuid or old_entry_details["uuid"],
             "title": received_title or old_entry_details["title"],
             "group": received_group or old_entry_details["group"],
             "username": received_username or old_entry_details["username"],
@@ -138,11 +125,11 @@ def updateEntry():
         group = kp.find_groups(name=new_entry["group"], first=True)
 
         if group:
-            kp.add_entry(
-                group,
-                new_entry["title"],
-                new_entry["username"],
-                new_entry["password"],
+            ent = kp.add_entry(
+                destination_group=group,
+                title=new_entry["title"],
+                username=new_entry["username"],
+                password=new_entry["password"],
                 url=new_entry["url"],
                 notes=None,
                 expiry_time=None,
@@ -151,6 +138,7 @@ def updateEntry():
                 icon=None,
                 force_creation=False,
             )
+            ent.uuid = received_uuid
         else:
             return jsonify({"error": "Group not found!"}), 404
 

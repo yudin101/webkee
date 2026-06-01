@@ -11,6 +11,7 @@ interface EditModalProps {
 export default function EditEntry({ entry, onClose, onSave }: EditModalProps) {
   // Initialize state with all existing field data
   const [formData, setFormData] = useState({
+    id: entry?.id || "",
     title: entry?.title || "",
     username: entry?.username || "",
     password: entry?.password || "",
@@ -31,14 +32,13 @@ export default function EditEntry({ entry, onClose, onSave }: EditModalProps) {
 
     const dataToSend = new FormData();
 
+    dataToSend.append("id", formData.id);
     dataToSend.append("title", formData.title);
     dataToSend.append("username", formData.username);
     dataToSend.append("password", formData.password);
     dataToSend.append("url", formData.url);
     dataToSend.append("group", formData.group);
     dataToSend.append("otp", formData.otp);
-
-    console.log(dataToSend);
 
     try {
       const response = await fetch(`${BACKEND_URL}/updateEntry`, {
@@ -104,6 +104,19 @@ export default function EditEntry({ entry, onClose, onSave }: EditModalProps) {
               value={formData.password}
               onChange={handleChange}
               required
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-grn4"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase text-gray-500 mb-1">
+              Group
+            </label>
+            <input
+              type="text"
+              name="group"
+              value={formData.group}
+              onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-grn4"
             />
           </div>
