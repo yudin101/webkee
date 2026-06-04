@@ -6,7 +6,12 @@ from flask_cors import CORS
 from uuid import UUID
 
 app = Flask(__name__)
-CORS(app)
+
+allowed_origins = [
+    "https://webkee.vercel.app"
+]
+
+CORS(app, origins=allowed_origins)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
