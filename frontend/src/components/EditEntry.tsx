@@ -17,7 +17,6 @@ export default function EditEntry({ entry, onClose, onSave }: EditModalProps) {
     password: entry?.password || "",
     url: entry?.url || "",
     group: entry?.group || "",
-    otp: entry?.otp || "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,7 +37,6 @@ export default function EditEntry({ entry, onClose, onSave }: EditModalProps) {
     dataToSend.append("password", formData.password);
     dataToSend.append("url", formData.url);
     dataToSend.append("group", formData.group);
-    dataToSend.append("otp", formData.otp);
 
     try {
       const response = await fetch(`${BACKEND_URL}/updateEntry`, {

@@ -102,7 +102,6 @@ def updateEntry():
         received_username = request.form.get("username")
         received_password = request.form.get("password")
         received_url = request.form.get("url")
-        received_otp = request.form.get("otp")
 
         entry = kp.find_entries(uuid=received_uuid, first=True)
 
@@ -123,7 +122,7 @@ def updateEntry():
             "username": received_username or old_entry_details["username"],
             "password": received_password or old_entry_details["password"],
             "url": received_url or old_entry_details["url"],
-            "otp": received_otp or old_entry_details["otp"],
+            "otp": old_entry_details["otp"],
         }
 
         kp.delete_entry(entry)
